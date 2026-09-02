@@ -38,7 +38,7 @@ jobs:
       - name: Source hygiene
         run: |
           set -eu
-          if grep -rn -E '/Users/[a-z]+' Sources Tests --include='*.swift' --include='*.json'; then
+          if grep -rn -E '/Users/[a-z]+' Sources Tests --include='*.swift' --include='*.json' --exclude-dir=.build; then
             echo "absolute user paths are not allowed"; exit 1
           fi
           echo "no absolute user paths"
