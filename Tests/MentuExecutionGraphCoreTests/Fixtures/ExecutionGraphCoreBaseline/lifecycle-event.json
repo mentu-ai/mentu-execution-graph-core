@@ -1,0 +1,1 @@
+{"detail":{"hash":"eb2eed02d97f100b21fe2e2cba355a127b349330a7304ea1e24635a8dcc0b241","runId":"run_execution_graph_core_baseline","schema":"mentu.execution-admission-receipt.v1","success":true},"elapsedMilliseconds":7,"phase":"admit","schema":"mentu.graph.lifecycle-event.v1","state":"completed"}

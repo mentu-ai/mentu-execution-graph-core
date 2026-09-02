@@ -1,0 +1,44 @@
+name: CI
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  test:
+    name: Build, test, consumer boundary (Swift / macOS)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: swift --version
+      - name: Test
+        run: swift test
+      - name: Release build
+        run: swift build -c release
+      - name: Standalone consumer fixture
+        run: swift run --package-path Tests/ConsumerFixture
+      - name: Consumer dependency boundary
+        run: |
+          diagnostics=$(mktemp)
+          trap 'rm -f "$diagnostics"' EXIT
+          if swiftc -typecheck Tests/ConsumerFixture/Sources/ConsumerFixture/main.swift 2>"$diagnostics"; then
+            echo "Consumer unexpectedly compiled without the package dependency"
+            exit 1
+          fi
+          if ! grep -Fq "no such module 'MentuExecutionGraphCore'" "$diagnostics"; then
+            echo "Consumer failed for a reason other than the missing package dependency"
+            cat "$diagnostics"
+            exit 1
+          fi
+          echo "Consumer correctly requires MentuExecutionGraphCore"
+      - name: Source hygiene
+        run: |
+          set -eu
+          if grep -rn -E '/Users/[a-z]+' Sources Tests --include='*.swift' --include='*.json'; then
+            echo "absolute user paths are not allowed"; exit 1
+          fi
+          echo "no absolute user paths"

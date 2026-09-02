@@ -1,0 +1,5 @@
+.build/
+.swiftpm/
+.mentu/
+.DS_Store
+Tests/ConsumerFixture/.build/
